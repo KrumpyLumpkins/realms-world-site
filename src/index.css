@@ -1260,6 +1260,21 @@
       0 18px 34px color-mix(in oklab, black 40%, transparent);
   }
 
+  /* Fades the art itself into the panel, and keeps the figure and the orb in the crop at every width. */
+  .scroll-codex-feature-art {
+    object-position: 42% 44%;
+    mask-image: linear-gradient(to bottom, black 88%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, black 88%, transparent);
+  }
+
+  @media (min-width: 64rem) {
+    .scroll-codex-feature-art {
+      object-position: 20% 44%;
+      mask-image: linear-gradient(to right, transparent, rgb(0 0 0 / 0.12) 6%, rgb(0 0 0 / 0.5) 12%, black 18%);
+      -webkit-mask-image: linear-gradient(to right, transparent, rgb(0 0 0 / 0.12) 6%, rgb(0 0 0 / 0.5) 12%, black 18%);
+    }
+  }
+
   .scroll-codex-feed {
     align-items: stretch;
   }

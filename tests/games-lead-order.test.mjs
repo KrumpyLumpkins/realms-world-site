@@ -1,11 +1,12 @@
 import test, { after, before } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createElement } from "react";
 import { prerenderToNodeStream } from "react-dom/static";
 import { createServer } from "vite";
+import { generate } from "../scripts/generate-scroll-posts.mjs";
 import { games, gameStatusText, pickGames } from "../src/data/games.ts";
 
 const ROOT = process.cwd();
@@ -89,6 +90,14 @@ before(async () => {
     pages.home = await renderRoute("/", app);
     pages.games = await renderRoute("/games", app);
     pages.frontier = await renderRoute("/games/frontier", app);
+    pages.scroll = await renderRoute("/scroll", app);
+
+    // The same route when a newer post, with no art of its own, takes the slot.
+    const { scrollPosts } = await vite.ssrLoadModule("/src/generated/scroll-posts.ts");
+    const { featureImage: _image, featureImageAlt: _alt, ...plain } = scrollPosts[0];
+    scrollPosts.unshift({ ...plain, slug: "newer-dispatch", title: "A Newer Dispatch" });
+    pages.scrollPlain = await renderRoute("/scroll", app);
+    scrollPosts.shift();
   } finally {
     console.log = log;
   }
@@ -340,4 +349,51 @@ test("The home page has no hex section", () => {
   assert.doesNotMatch(pages.home, /id="hex-explorer"|Interactive hex grid explorer|Skip interactive section|<canvas/);
   assert.equal(existsSync(join(ROOT, "src/components/hex-explorer")), false);
   assert.match(pages.home, /id="hero"[\s\S]*id="games"/);
+});
+
+function scrollFeature(html) {
+  return between(html, "scroll-codex-feature", "scroll-codex-feed");
+}
+
+test("/scroll shows the newest lore entry as a feature with its art, alt text and link", () => {
+  const feature = scrollFeature(pages.scroll);
+  const images = feature.match(/<img\b[^>]*>/g);
+  assert.equal(images.length, 1);
+  assert.match(images[0], /src="\/lore\/history-of-lost-worlds\/lost-worlds-feature\.webp"/);
+  assert.match(
+    decode(images[0]),
+    /alt="A cloaked figure on a ridge of black basalt reaches toward a dark orb wrapped in blue and orange lightning, beneath falling shards of rock\."/
+  );
+  const link = pages.scroll.slice(pages.scroll.lastIndexOf("<a ", pages.scroll.indexOf("scroll-codex-feature")));
+  assert.match(link.match(/^<a\b[^>]*>/)[0], /href="\/scroll\/history-of-lost-worlds"/);
+  assert.ok(shownText(feature).includes("A History of Lost Worlds"));
+  assert.ok(existsSync(join(ROOT, "public/lore/history-of-lost-worlds/lost-worlds-feature.webp")));
+});
+
+test("/scroll's feature art keeps the post's title first and stays out of the feed", () => {
+  const feature = scrollFeature(pages.scroll);
+  assert.ok(feature.indexOf("<h2") < feature.indexOf("<img"), "Expected the link to read its title before the alt text");
+  assert.doesNotMatch(pages.scroll.slice(pages.scroll.indexOf("scroll-codex-feed")), /lost-worlds-feature\.webp/);
+});
+
+test("A newer post with no feature art takes the slot with no image", () => {
+  const feature = scrollFeature(pages.scrollPlain);
+  assert.ok(shownText(feature).includes("A Newer Dispatch"));
+  assert.doesNotMatch(feature, /<img\b/);
+  assert.doesNotMatch(pages.scrollPlain, /lost-worlds-feature\.webp/);
+});
+
+test("A post cannot set feature art without alt text", async () => {
+  const root = mkdtempSync(join(tmpdir(), "scroll-feature-"));
+  try {
+    mkdirSync(join(root, "content/scroll"), { recursive: true });
+    const post = (extra) => `---\ntitle: "T"\nexcerpt: "E"\ndate: "2026-01-01"\ntype: "lore"\nauthor: "A"\ntags: []\npublished: true\n${extra}---\nBody\n`;
+    writeFileSync(join(root, "content/scroll/2026-01-01-a.md"), post('featureImage: "/a.webp"\n'));
+    await assert.rejects(generate(root), /featureImage needs featureImageAlt/);
+    writeFileSync(join(root, "content/scroll/2026-01-01-a.md"), post('featureImage: "/a.webp"\nfeatureImageAlt: "An a"\n'));
+    await generate(root);
+    assert.match(readFileSync(join(root, "src/generated/scroll-posts.ts"), "utf8"), /"featureImageAlt": "An a"/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });

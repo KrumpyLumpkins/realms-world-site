@@ -13,6 +13,8 @@ export interface ScrollPost {
   tags: string[];
   published: boolean;
   coverImage?: string;
+  featureImage?: string;
+  featureImageAlt?: string;
   canonicalUrl?: string;
   externalUrl?: string;
   readingTimeMinutes: number;
@@ -34,6 +36,8 @@ export const scrollPosts: ScrollPost[] = [
     ],
     "published": true,
     "coverImage": "/lore/history-of-lost-worlds/twilight-tundra.webp",
+    "featureImage": "/lore/history-of-lost-worlds/lost-worlds-feature.webp",
+    "featureImageAlt": "A cloaked figure on a ridge of black basalt reaches toward a dark orb wrapped in blue and orange lightning, beneath falling shards of rock.",
     "readingTimeMinutes": 7,
     "html": ""
   },
