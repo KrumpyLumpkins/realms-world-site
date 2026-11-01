@@ -102,7 +102,7 @@ function IntroSectionContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.7, ease: "easeOut" }}
           >
-            Realms gaming ecosystem is focused on the development of fun,
+            The Realms gaming ecosystem is focused on the development of fun,
             strategic and engaging AI-native onchain games. We develop games to
             accept the use of AI and encourage all users to maximise their
             gaming capabilities, bounded by the rules enforced by blockchain.

@@ -324,7 +324,7 @@ test("The hero states the approved position, and no page names a year after 2026
 
   assert.ok(
     decode(hero).includes(
-      ">Realms gaming ecosystem is focused on the development of fun, strategic and engaging AI-native onchain games. We develop games to accept the use of AI and encourage all users to maximise their gaming capabilities, bounded by the rules enforced by blockchain.</p>"
+      ">The Realms gaming ecosystem is focused on the development of fun, strategic and engaging AI-native onchain games. We develop games to accept the use of AI and encourage all users to maximise their gaming capabilities, bounded by the rules enforced by blockchain.</p>"
     ),
     "Expected the approved paragraph in the hero"
   );
