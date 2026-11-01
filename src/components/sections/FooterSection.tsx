@@ -72,7 +72,7 @@ export function FooterSection() {
                 />
                 <h3 className="realm-title text-3xl mb-3">Realms World</h3>
                 <p className="text-muted-foreground leading-relaxed max-w-sm">
-                  The autonomous onchain gaming ecosystem powered by $LORDS.
+                  The onchain gaming ecosystem powered by $LORDS.
                   Built by BibliothecaDAO.
                 </p>
               </div>

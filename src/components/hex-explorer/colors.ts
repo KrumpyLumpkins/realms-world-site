@@ -23,7 +23,7 @@ export function featureColor(type: FeatureHexData["type"]): string {
       return COLORS.featureGame;
     case "lore":
       return COLORS.featureLore;
-    case "agent":
+    case "infrastructure":
       return COLORS.featureAgent;
     case "token":
       return COLORS.featureToken;

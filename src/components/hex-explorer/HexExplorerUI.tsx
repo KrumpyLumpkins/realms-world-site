@@ -158,7 +158,7 @@ function FeatureLink({
         className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-primary hover:text-primary/80 transition-colors"
         style={{ fontFamily: "var(--font-ui)" }}
       >
-        {label}
+        {type === "game" ? "Details" : label}
         <span aria-hidden="true">&rarr;</span>
       </Link>
     );

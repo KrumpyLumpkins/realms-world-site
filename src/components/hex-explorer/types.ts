@@ -13,7 +13,7 @@ export type HexDirection = 0 | 1 | 2 | 3 | 4 | 5;
 
 export interface FeatureHexData {
   coord: HexCoord;
-  type: "game" | "lore" | "agent" | "token" | "community";
+  type: "game" | "lore" | "infrastructure" | "token" | "community";
   symbol: string;
   label: string;
   description: string;

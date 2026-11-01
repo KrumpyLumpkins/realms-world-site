@@ -5,7 +5,6 @@ import { useNavigate, Link, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { HEADER_SCROLL_OFFSET } from "@/lib/constants";
 import {
-  Bot,
   Coins,
   Compass,
   Gamepad2,
@@ -25,7 +24,6 @@ import {
 
 const homeSections = [
   { id: "hero", label: "Welcome", href: "#" },
-  { id: "agent-native", label: "Agents", href: "#agent-native" },
   { id: "games", label: "Games", href: "#games" },
   { id: "economics", label: "Economics", href: "#economics" },
   { id: "partners", label: "Partners", href: "#partners" },
@@ -33,7 +31,6 @@ const homeSections = [
 
 const railIcons: Record<string, LucideIcon> = {
   hero: Home,
-  "agent-native": Bot,
   games: Gamepad2,
   economics: Coins,
   partners: Handshake,

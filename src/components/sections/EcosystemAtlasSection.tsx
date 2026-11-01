@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { games } from "@/data/games";
+import { gameStatusText, pickGames, realmsGameSlugs, type Game } from "@/data/games";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   ArrowUpRight,
-  Bot,
+  Castle,
   Coins,
   ExternalLink,
   Gamepad2,
@@ -13,17 +13,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const homepageGameOrder = [
-  "blitz",
-  "loot-survivor",
-  "zkube",
-  "realms-eternum",
-];
-
-const gamesBySlug = new Map(games.map((game) => [game.slug, game]));
-const homepageGames = homepageGameOrder
-  .map((slug) => gamesBySlug.get(slug))
-  .filter((game): game is (typeof games)[number] => Boolean(game));
+// Blitz leads the Realms games with its own card, above this grid.
+const realmsGridGames = pickGames(realmsGameSlugs).filter(
+  (game) => game.slug !== "blitz",
+);
+const otherStudioGames = pickGames(["loot-survivor", "zkube"]);
 
 const blitzFeatures = [
   {
@@ -32,9 +26,9 @@ const blitzFeatures = [
     detail: "One-hour matches with live tactical decisions",
   },
   {
-    icon: Bot,
-    label: "Agent-Permissive",
-    detail: "Agents can scrape game data and transact onchain as human players can",
+    icon: Castle,
+    label: "Hyperstructures",
+    detail: "Compete over territory, resources and Hyperstructures",
   },
   {
     icon: Shield,
@@ -47,6 +41,91 @@ const blitzFeatures = [
     detail: "Top-ranking players win a prize-pool share",
   },
 ];
+
+function GameCard({ game, index }: { game: Game; index: number }) {
+  const statusText = gameStatusText(game);
+
+  return (
+    <motion.article
+      className="group relative overflow-hidden rounded-lg border border-primary/20 bg-black/25 backdrop-blur-sm lg:aspect-[16/10] realm-panel realm-holo-card"
+      initial={{ opacity: 0, y: 26 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35 + 0.06 * index, duration: 0.45 }}
+    >
+      <img
+        src={game.backgroundImage}
+        alt={game.title}
+        className={`absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105 ${
+          // An emblem is shown whole; a painting fills the card.
+          game.slug === "frontier"
+            ? "bg-[#14101D] object-contain opacity-40 lg:opacity-60"
+            : "object-cover opacity-60"
+        }`}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/10" />
+
+      <div className="relative flex h-full flex-col justify-end p-4 pt-12 sm:p-5 sm:pt-12">
+        {/* Status badge */}
+        <div className="absolute top-3 right-3">
+          {game.isLive ? (
+            <span className="realm-sigil text-green-400 border-green-500/30">
+              Live
+            </span>
+          ) : statusText ? (
+            <span className="realm-sigil text-foreground/85">{statusText}</span>
+          ) : null}
+        </div>
+
+
+        <h3 className="text-xl font-semibold mb-1.5">{game.title}</h3>
+        <p className="text-xs text-foreground/80 mb-2.5 line-clamp-3">
+          {game.summary ?? game.description}
+        </p>
+
+        {/* Genre tags */}
+        <div className="mb-3 flex flex-nowrap items-start justify-between gap-2">
+          <div className="flex min-w-0 flex-wrap gap-1.5">
+            {game.genre
+              ?.filter((genre) => genre !== game.studio)
+              .slice(0, 3)
+              .map((genre) => (
+                <span
+                  key={`${game.slug}-${genre}`}
+                  className="realm-sigil text-[9px]"
+                >
+                  {genre}
+                </span>
+              ))}
+          </div>
+          <span className="realm-sigil realm-studio-tag ml-auto shrink-0 text-[9px]">
+            {game.studio}
+          </span>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          {game.isLive && game.links?.homepage && (
+            <a
+              href={game.links.homepage}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center text-xs font-semibold text-primary hover:text-primary/80 transition-colors sm:min-h-6"
+            >
+              Play Now <ExternalLink className="ml-1 h-3 w-3" />
+            </a>
+          )}
+          <Link
+            to="/games/$slug"
+            params={{ slug: game.slug }}
+            className="inline-flex min-h-11 items-center text-xs text-foreground/80 hover:text-primary transition-colors sm:min-h-6"
+          >
+            Details <ArrowUpRight className="ml-1 h-3 w-3" />
+          </Link>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
 
 export function EcosystemAtlasSection() {
   return (
@@ -64,11 +143,11 @@ export function EcosystemAtlasSection() {
             Games
           </p>
           <h2 className="realm-title mb-4 text-2xl sm:text-3xl md:text-4xl">
-            REALMS ECOSYSTEM GAMES
+            REALMS GAMES
           </h2>
           <p className="realm-subtitle text-base sm:text-lg">
-            Onchain games built for players, builders, and AI agents.
-            Compete through verifiable rules and transparent economies.
+            Blitz, Frontier and Eternum share one world. Each has its own rules,
+            and those rules are verifiable onchain.
           </p>
           <Link
             to="/games"
@@ -81,7 +160,7 @@ export function EcosystemAtlasSection() {
 
         {/* ── Blitz Flagship Card ── */}
         <motion.div
-          className="group relative overflow-hidden rounded-lg border border-primary/30 bg-black/40 mb-12"
+          className="group relative overflow-hidden rounded-lg border border-primary/30 bg-black/40 mb-4 sm:mb-6"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.7 }}
@@ -108,16 +187,16 @@ export function EcosystemAtlasSection() {
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
                 <p className="realm-banner mb-3">
-                  <Bot className="h-3.5 w-3.5" />
-                  Flagship Agent Game
+                  <Swords className="h-3.5 w-3.5" />
+                  Featured Game
                 </p>
                 <h3 className="realm-title text-3xl sm:text-4xl md:text-5xl leading-tight mb-3">
                   Realms: Blitz
                 </h3>
                 <p className="text-base sm:text-lg text-foreground/85 max-w-xl mb-6 leading-relaxed">
-                  A fast-paced onchain RTS where humans and AI agents execute
-                  tactics in real time. One-hour matches are fully verified on
-                  Starknet, with top-ranking players winning a share of the $LORDS prize pool.
+                  A fast-paced onchain RTS where players execute tactics in real
+                  time. One-hour matches are fully verified on Starknet, with
+                  top-ranking players winning a share of the $LORDS prize pool.
                 </p>
 
                 <div className="flex flex-wrap gap-3 mb-6">
@@ -179,95 +258,27 @@ export function EcosystemAtlasSection() {
           </div>
         </motion.div>
 
-        {/* ── Games grid header ── */}
+        {/* ── Other Realms games ── */}
+        <div className="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+          {realmsGridGames.map((game, index) => (
+            <GameCard key={game.slug} game={game} index={index} />
+          ))}
+        </div>
+
+        {/* ── Other studios header ── */}
         <motion.div
           className="mb-6 flex justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <p className="realm-banner mx-auto flex w-fit text-center">ECOSYSTEM GAMES</p>
+          <p className="realm-banner mx-auto flex w-fit text-center">GAMES FROM OTHER STUDIOS</p>
         </motion.div>
 
-        {/* ── Games grid ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {homepageGames.map((game, index) => (
-            <motion.article
-              key={game.slug}
-              className={`group relative overflow-hidden rounded-lg border border-primary/20 bg-black/25 backdrop-blur-sm aspect-[16/10] realm-panel realm-holo-card ${!game.isLive ? "opacity-60" : ""}`}
-              initial={{ opacity: 0, y: 26 }}
-              animate={{ opacity: game.isLive ? 1 : 0.6, y: 0 }}
-              transition={{ delay: 0.35 + 0.06 * index, duration: 0.45 }}
-            >
-              <img
-                src={game.image}
-                alt={game.title}
-                className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/10" />
-
-              <div className="relative flex h-full flex-col justify-end p-4 sm:p-5">
-                {/* Status badge */}
-                <div className="absolute top-3 right-3">
-                  {game.isLive ? (
-                    <span className="realm-sigil text-green-400 border-green-500/30">
-                      Live
-                    </span>
-                  ) : (
-                    <span className="realm-sigil text-foreground/65">
-                      Coming Soon
-                    </span>
-                  )}
-                </div>
-
-
-                <h3 className="text-xl font-semibold mb-1.5">{game.title}</h3>
-                <p className="text-xs text-foreground/80 mb-2.5 line-clamp-2">
-                  {game.description}
-                </p>
-
-                {/* Genre tags */}
-                <div className="mb-3 flex flex-nowrap items-start justify-between gap-2">
-                  <div className="flex min-w-0 flex-wrap gap-1.5">
-                    {game.genre
-                      ?.filter((genre) => genre !== game.studio)
-                      .slice(0, 3)
-                      .map((genre) => (
-                        <span
-                          key={`${game.slug}-${genre}`}
-                          className="realm-sigil text-[9px]"
-                        >
-                          {genre}
-                        </span>
-                      ))}
-                  </div>
-                  <span className="realm-sigil realm-studio-tag ml-auto shrink-0 text-[9px]">
-                    {game.studio}
-                  </span>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-3">
-                  {game.isLive && game.links?.homepage && (
-                    <a
-                      href={game.links.homepage}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
-                    >
-                      Play Now <ExternalLink className="ml-1 h-3 w-3" />
-                    </a>
-                  )}
-                  <Link
-                    to="/games/$slug"
-                    params={{ slug: game.slug }}
-                    className="inline-flex items-center text-xs text-foreground/80 hover:text-primary transition-colors"
-                  >
-                    Details <ArrowUpRight className="ml-1 h-3 w-3" />
-                  </Link>
-                </div>
-              </div>
-            </motion.article>
+        {/* ── Other studios grid ── */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+          {otherStudioGames.map((game, index) => (
+            <GameCard key={game.slug} game={game} index={index} />
           ))}
         </div>
       </div>

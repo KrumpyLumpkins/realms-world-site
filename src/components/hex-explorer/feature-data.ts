@@ -10,8 +10,17 @@ export const FEATURE_HEXES: FeatureHexData[] = [
     symbol: "BLZ",
     label: "Blitz",
     description:
-      "Fast-paced onchain RTS where humans and AI agents execute tactics in real time. One-hour matches, fully verified on Starknet.",
+      "Fast-paced onchain RTS where players execute tactics in real time. One-hour matches, fully verified on Starknet.",
     link: "/games/blitz",
+  },
+  {
+    coord: { q: -4, r: 1 },
+    type: "game",
+    symbol: "FRT",
+    label: "Frontier",
+    description:
+      "Explore a new map each day. At the day's end the mist takes the map and every army. Your realm keeps all it earned. Free to play.",
+    link: "/games/frontier",
   },
   {
     coord: { q: 4, r: -2 },
@@ -54,7 +63,7 @@ export const FEATURE_HEXES: FeatureHexData[] = [
 
   {
     coord: { q: 7, r: -3 },
-    type: "agent",
+    type: "infrastructure",
     symbol: "DOJO",
     label: "Dojo Engine",
     description:
@@ -63,7 +72,7 @@ export const FEATURE_HEXES: FeatureHexData[] = [
   },
   {
     coord: { q: -6, r: 8 },
-    type: "agent",
+    type: "infrastructure",
     symbol: "STRK",
     label: "Starknet",
     description:
@@ -72,7 +81,7 @@ export const FEATURE_HEXES: FeatureHexData[] = [
   },
   {
     coord: { q: -7, r: 2 },
-    type: "agent",
+    type: "infrastructure",
     symbol: "CART",
     label: "Cartridge",
     description:
@@ -88,7 +97,7 @@ export const FEATURE_HEXES: FeatureHexData[] = [
     symbol: "$LORDS",
     label: "LORDS Token",
     description:
-      "The native token uniting the Realms ecosystem. Used for game entry, marketplace trading, DAO governance, and staking rewards.",
+      "The token of the Realms ecosystem, for marketplace trading, DAO governance and staking rewards. Until the LORDS launch, games run on test LORDS with no value.",
   },
   {
     coord: { q: 6, r: 3 },
@@ -96,7 +105,7 @@ export const FEATURE_HEXES: FeatureHexData[] = [
     symbol: "veLRD",
     label: "veLORDS Staking",
     description:
-      "Lock LORDS to earn protocol revenue. veLORDS holders govern the DAO and earn yield from all ecosystem game fees.",
+      "Lock LORDS to earn protocol revenue. veLORDS holders govern the DAO.",
   },
 
   // ── DAO & Community (outer ring, 8-12 hex radius) ──────────────────
@@ -151,18 +160,18 @@ export const FEATURE_HEXES: FeatureHexData[] = [
 
 /** Agent speech phrases — rotated randomly. */
 export const AGENT_PHRASES: string[] = [
-  "Scouting Eternum territories...",
-  "Staking LORDS for veLORDS...",
-  "Verifying Cairo proof...",
-  "Raiding neighbor's storehouse...",
-  "Drafting Frontinus proposal...",
-  "Indexing Dojo world state...",
-  "Querying Torii for events...",
-  "Minting session keys via Cartridge...",
-  "Exploring the 16 Orders...",
-  "Survivor run: floor 47...",
-  "Dark Shuffle draft in progress...",
-  "Processing DAO treasury data...",
+  "Frontier's map is new every day.",
+  "The mist comes at the day's end.",
+  "Blitz matches last one hour.",
+  "Eternum's next campaign is being prepared.",
+  "Every Realm belongs to one of 16 Orders.",
+  "8,000 bags. 8,000 Realms. One onchain world.",
+  "Every hex conquered is permanently inscribed.",
+  "Lock LORDS as veLORDS to vote in the DAO.",
+  "Frontinus House funds new onchain games.",
+  "Loot Survivor has permadeath.",
+  "Dark Shuffle: draft a deck, fight the beasts.",
+  "Pistols at Dawn: every bullet is etched forever.",
 ];
 
 /** Initial agent definitions. */

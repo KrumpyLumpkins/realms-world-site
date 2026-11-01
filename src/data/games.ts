@@ -13,10 +13,13 @@ export interface Game {
   }[];
   genre?: string[];
   description: string;
-  status: "mainnet" | "testnet" | "development";
+  summary?: string;
+  status?: "mainnet" | "testnet" | "development";
+  statusLabel?: string;
   isLive: boolean;
   studio: string;
   whitepaper?: string;
+  howToPlay?: string;
   players?: number;
   tvl?: number;
   video?: string;
@@ -29,6 +32,18 @@ export interface Game {
   };
 }
 
+/** Realms' own games, in the order every games list leads with. */
+export const realmsGameSlugs = ["blitz", "frontier", "realms-eternum"];
+
+/** The status a game shows wherever one is rendered. */
+export function gameStatusText(game: Game) {
+  return game.statusLabel ?? game.status;
+}
+
+export function pickGames(slugs: string[]) {
+  return slugs.flatMap((slug) => games.find((game) => game.slug === slug) ?? []);
+}
+
 export const games: Game[] = [
   {
     id: 2,
@@ -38,12 +53,34 @@ export const games: Game[] = [
     backgroundImage: "/brand/blitz-card.png",
     genre: ["Real-Time Strategy", "Free-for-All", "PvP", "Realms Games"],
     description:
-      "Blitz is a one-hour onchain RTS where humans and AI agents compete over territory, production, and tactical timing. Matches are fully verifiable on Starknet, and top-ranking players win a share of the $LORDS prize pool.",
+      "Blitz is a one-hour onchain RTS where players compete over territory, production, and tactical timing. Matches are fully verifiable on Starknet, and top-ranking players win a share of the $LORDS prize pool.",
     status: "mainnet",
     isLive: true,
     studio: "Realms Games",
     links: {
       homepage: "https://blitz.realms.world/",
+      discord: "https://discord.gg/realmsworld",
+      twitter: "https://x.com/realmsgg",
+      github: "https://github.com/BibliothecaDAO/eternum",
+    },
+  },
+  {
+    id: 14,
+    slug: "frontier",
+    title: "Realms: Frontier",
+    image: "/games/frontier/cover.png",
+    backgroundImage: "/games/frontier/emblem.png",
+    genre: ["Daily Expedition", "Strategy", "Free to Play", "Realms Games"],
+    description:
+      "Your realm is the only safety. Each day a new map opens around it: send armies into the mist, clear what guards the land and send home what they find. At the day's end the mist takes the map and every army. Your realm keeps all it earned. Free to play, and no other player can attack you.",
+    summary:
+      "Explore a new map each day. At the day's end the mist takes the map and every army. Your realm keeps all it earned. Free to play.",
+    statusLabel: "Season 0 live 3 November 2026",
+    isLive: false,
+    studio: "Realms Games",
+    howToPlay: "https://docs.realms.party/frontier",
+    links: {
+      homepage: "https://play.realms.party",
       discord: "https://discord.gg/realmsworld",
       twitter: "https://x.com/realmsgg",
       github: "https://github.com/BibliothecaDAO/eternum",

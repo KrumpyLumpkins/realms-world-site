@@ -9,7 +9,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { games } from "@/data/games";
+import { realmsGameSlugs } from "@/data/games";
 import { useQuery } from "@tanstack/react-query";
 import { lordsInfoQueryOptions } from "@/lib/query-options";
 
@@ -30,8 +30,6 @@ export function IntroSection() {
 }
 
 function IntroSectionContent() {
-  const liveGameCount = games.filter((game) => game.isLive).length;
-
   const { data: lordsInfo } = useQuery(lordsInfoQueryOptions());
 
   const parsedLordsPrice = Number.parseFloat(lordsInfo?.price?.rate ?? "");
@@ -42,8 +40,8 @@ function IntroSectionContent() {
   const tickerStats = [
     {
       icon: Gamepad2,
-      label: "Onchain Games",
-      value: liveGameCount.toString(),
+      label: "Realms Games",
+      value: realmsGameSlugs.length.toString(),
     },
     {
       icon: Coins,
@@ -89,12 +87,12 @@ function IntroSectionContent() {
 
           {/* Title */}
           <motion.h1
-            className="realm-title hero-title-shimmer text-4xl sm:text-5xl md:text-7xl lg:text-8xl leading-[0.9] mb-7"
+            className="realm-title text-[#F3D08A] text-4xl sm:text-5xl md:text-7xl lg:text-8xl leading-[0.9] mb-7"
             initial={{ opacity: 0, y: 30, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.4, duration: 0.9, ease: "easeOut" }}
           >
-            THE NEW FRONTIER OF GAMING
+            ONE WORLD. THREE GAMES.
           </motion.h1>
 
           {/* Subtitle */}
@@ -104,24 +102,18 @@ function IntroSectionContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.7, ease: "easeOut" }}
           >
-            The AI era is here and fundamentally changing gaming as we know it.
-            The Realms Ecosystem is building for the new age, one where AI and
-            humans can build, strategize, collaborate, and compete. Together.
-            Onchain. Forever.
+            Blitz, Frontier and Eternum are AI-native onchain games. We design
+            them for AI rather than try to avoid or ban it. AI companions and
+            assistants for play are planned. They are not available yet.
           </motion.p>
 
           {/* CTAs */}
           <motion.div
-            className="grid w-full max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3 mb-12"
+            className="grid w-full max-w-xl grid-cols-1 gap-3 sm:grid-cols-2 mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.4, duration: 0.6, ease: "easeOut" }}
           >
-            <Button size="lg" variant="oath" className="w-full justify-center text-base px-6" asChild>
-              <a href="https://market.realms.world/" target="_blank" rel="noopener noreferrer">
-                Browse Marketplace
-              </a>
-            </Button>
             <Button
               size="lg"
               variant="war"
