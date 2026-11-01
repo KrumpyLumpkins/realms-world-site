@@ -1,6 +1,6 @@
 import test, { after, before } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createElement } from "react";
@@ -240,7 +240,6 @@ test("Product pages do not present AI agents as live", () => {
     "src/components/layout/TopBar.tsx",
     "src/components/sections/IntroSection.tsx",
     "src/components/sections/EcosystemAtlasSection.tsx",
-    "src/components/hex-explorer/feature-data.ts",
   ]) {
     assert.doesNotMatch(
       read(path),
@@ -272,18 +271,18 @@ test("Home game card links keep a touch-sized target", () => {
 });
 
 test("The hero has two actions and a still gold title", () => {
-  const hero = between(pages.home, 'id="hero"', 'id="hex-explorer"');
+  const hero = between(pages.home, 'id="hero"', 'id="games"');
   const actions = [...hero.matchAll(/<a\b[^>]*>([^<]+)<\/a>/g)].map(([, text]) => text.trim());
   const title = hero.match(/<h1\b[^>]*class="([^"]*)"[^>]*>([^<]*)<\/h1>/);
 
   assert.deepEqual(actions, ["Explore Games", "Stake veLORDS"]);
-  assert.equal(title[2], "ONE WORLD. THREE GAMES.");
+  assert.equal(title[2], "THE NEW FRONTIER OF GAMING");
   assert.ok(title[1].split(/\s+/).includes("text-[#F3D08A]"));
   assert.doesNotMatch(read("src/index.css"), /hero-shimmer|hero-title-shimmer/);
 });
 
-test("The hero counts the Realms games its headline names", () => {
-  const hero = between(pages.home, 'id="hero"', 'id="hex-explorer"');
+test("The hero counts the Realms games", () => {
+  const hero = between(pages.home, 'id="hero"', 'id="games"');
 
   assert.match(hero, />Realms Games<\/[a-z0-9]+>\s*<[a-z0-9]+\b[^>]*>3</);
 });
@@ -319,15 +318,15 @@ test("Only Frontier has a status label, and other games keep their status", () =
   }
 });
 
-test("The hero states the AI position, and no page names a year after 2026", () => {
-  const hero = between(pages.home, 'id="hero"', 'id="hex-explorer"');
+test("The hero states the approved position, and no page names a year after 2026", () => {
+  const hero = between(pages.home, 'id="hero"', 'id="games"');
   const laterYear = /\b20(2[7-9]|[3-9]\d)\b/;
 
   assert.ok(
     decode(hero).includes(
-      ">Blitz, Frontier and Eternum are AI-native onchain games. We design them for AI rather than try to avoid or ban it. AI companions and assistants for play are planned. They are not available yet.</p>"
+      ">Realms gaming ecosystem is focused on the development of fun, strategic and engaging AI-native onchain games. We develop games to accept the use of AI and encourage all users to maximise their gaming capabilities, bounded by the rules enforced by blockchain.</p>"
     ),
-    "Expected the approved AI position in the hero"
+    "Expected the approved paragraph in the hero"
   );
   for (const [name, html] of Object.entries(pages)) {
     assert.doesNotMatch(html, laterYear, `Expected no later year on ${name}`);
@@ -335,4 +334,10 @@ test("The hero states the AI position, and no page names a year after 2026", () 
   for (const path of ["src/data/games.ts", "src/components/game/FrontierGuide.tsx"]) {
     assert.doesNotMatch(read(path), laterYear, `Expected no later year in ${path}`);
   }
+});
+
+test("The home page has no hex section", () => {
+  assert.doesNotMatch(pages.home, /id="hex-explorer"|Interactive hex grid explorer|Skip interactive section|<canvas/);
+  assert.equal(existsSync(join(ROOT, "src/components/hex-explorer")), false);
+  assert.match(pages.home, /id="hero"[\s\S]*id="games"/);
 });

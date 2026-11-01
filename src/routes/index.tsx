@@ -3,11 +3,6 @@ import { ReactNode, Suspense, lazy, useEffect, useRef, useState } from "react";
 import { IntroSection } from "@/components/sections/IntroSection";
 import { generateMetaTags } from "@/lib/og-image";
 
-const HexExplorerSection = lazy(() =>
-  import("@/components/hex-explorer/HexExplorerSection").then((module) => ({
-    default: module.HexExplorerSection,
-  }))
-);
 const EcosystemAtlasSection = lazy(() =>
   import("@/components/sections/EcosystemAtlasSection").then((module) => ({
     default: module.EcosystemAtlasSection,
@@ -78,7 +73,7 @@ export const Route = createFileRoute("/")({
     meta: generateMetaTags({
       title: "Realms World - Blitz, Frontier and Eternum",
       description:
-        "Blitz, Frontier and Eternum are AI-native onchain games, and LORDS is the token of their ecosystem. AI companions for play are planned and not available yet.",
+        "Blitz, Frontier and Eternum are AI-native onchain games, and LORDS is the token of their ecosystem.",
       path: "/",
     }),
   }),
@@ -97,11 +92,6 @@ function HomePage() {
     <>
       <div id="hero">
         <IntroSection />
-      </div>
-      <div id="hex-explorer">
-        <DeferredSection eager>
-          <HexExplorerSection />
-        </DeferredSection>
       </div>
       <SectionDivider />
       <div id="games">

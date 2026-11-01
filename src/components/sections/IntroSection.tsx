@@ -92,7 +92,7 @@ function IntroSectionContent() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.4, duration: 0.9, ease: "easeOut" }}
           >
-            ONE WORLD. THREE GAMES.
+            THE NEW FRONTIER OF GAMING
           </motion.h1>
 
           {/* Subtitle */}
@@ -102,9 +102,10 @@ function IntroSectionContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.7, ease: "easeOut" }}
           >
-            Blitz, Frontier and Eternum are AI-native onchain games. We design
-            them for AI rather than try to avoid or ban it. AI companions and
-            assistants for play are planned. They are not available yet.
+            Realms gaming ecosystem is focused on the development of fun,
+            strategic and engaging AI-native onchain games. We develop games to
+            accept the use of AI and encourage all users to maximise their
+            gaming capabilities, bounded by the rules enforced by blockchain.
           </motion.p>
 
           {/* CTAs */}
