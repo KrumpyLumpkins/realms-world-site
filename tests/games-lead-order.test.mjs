@@ -12,6 +12,7 @@ import { games, gameStatusText, pickGames } from "../src/data/games.ts";
 const ROOT = process.cwd();
 const APP_ENTRY = "virtual:site-render-test-app";
 const FRONTIER_LABEL = "Season 0 live 3 November 2026";
+const TAKEN_DOWN_SLUG = "eternum-agent-first-design";
 
 function read(relPath) {
   return readFileSync(join(ROOT, relPath), "utf8");
@@ -20,15 +21,21 @@ function read(relPath) {
 let vite;
 let cacheDir;
 const pages = {};
+let takenDownRoute;
 
 // Renders a route through the app's real router, loaders and components.
-async function renderRoute(path, app) {
+async function loadRoute(path, app) {
   const router = app.createRouter({
     routeTree: app.routeTree,
     context: { queryClient: app.queryClient },
     history: app.createMemoryHistory({ initialEntries: [path] }),
   });
   await router.load();
+  return router;
+}
+
+async function renderRoute(path, app) {
+  const router = await loadRoute(path, app);
 
   const errors = [];
   const { prelude } = await prerenderToNodeStream(
@@ -91,6 +98,7 @@ before(async () => {
     pages.games = await renderRoute("/games", app);
     pages.frontier = await renderRoute("/games/frontier", app);
     pages.scroll = await renderRoute("/scroll", app);
+    takenDownRoute = (await loadRoute(`/scroll/${TAKEN_DOWN_SLUG}`, app)).state;
 
     // The same route when a newer post, with no art of its own, takes the slot.
     const { scrollPosts } = await vite.ssrLoadModule("/src/generated/scroll-posts.ts");
@@ -396,4 +404,24 @@ test("A post cannot set feature art without alt text", async () => {
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("/scroll does not list the taken-down post", () => {
+  assert.ok(shownText(pages.scroll).includes("The Infrastructure Stack Powering Autonomous Worlds"));
+  assert.doesNotMatch(pages.scroll, /eternum-agent-first-design|Agents First|built for them/);
+});
+
+test("The taken-down post's old address redirects to /scroll", () => {
+  assert.equal(takenDownRoute.redirect?.options.href, "/scroll");
+  assert.equal(takenDownRoute.statusCode, 301);
+  assert.deepEqual(
+    JSON.parse(read("vercel.json")).redirects.find((entry) => entry.source === `/scroll/${TAKEN_DOWN_SLUG}`),
+    { source: `/scroll/${TAKEN_DOWN_SLUG}`, destination: "/scroll", permanent: true }
+  );
+});
+
+test("The taken-down post is not in what the site ships", () => {
+  assert.equal(existsSync(join(ROOT, `content/scroll/2026-02-12-${TAKEN_DOWN_SLUG}.md`)), false);
+  assert.doesNotMatch(read("src/generated/scroll-posts.ts"), /eternum-agent-first-design|Agents First|built for them/);
+  assert.doesNotMatch(read("public/sitemap.xml"), /eternum-agent-first-design/);
 });
